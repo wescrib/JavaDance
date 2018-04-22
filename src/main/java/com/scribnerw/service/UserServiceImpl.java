@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.scribnerw.models.User.Student;
-import com.scribnerw.repos.UserRepo;
+import com.scribnerw.repos.StudentRepo;
 
 public class UserServiceImpl implements UserServiceInterface {
 	
 	@Autowired
-	private UserRepo repo;
+	private StudentRepo repo;
 
 	@Override
 	public Student saveUser(Student user) {
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Override
 	public List<Student> getAllUsers() {
-		return repo.findAll();
+		return null;
 	}
 	
 	

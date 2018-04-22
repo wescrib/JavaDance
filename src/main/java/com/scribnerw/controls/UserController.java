@@ -1,6 +1,9 @@
 package com.scribnerw.controls;
 
 import java.util.List;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scribnerw.models.User.*;
@@ -20,13 +24,14 @@ import com.scribnerw.repos.*;
 public class UserController {
 	
 	@Autowired
-	private UserRepo studentRepo;
+	private StudentRepo studentRepo;
 	
 	@Autowired
 	private InstructorRepo instructorRepo;
 	
 	@Autowired
 	private AdminRepo adminRepo;
+	
 	
 	/*
 	 * CREATE ACCOUNTS
@@ -86,15 +91,15 @@ public class UserController {
 	 */
 	@GetMapping("/student/{id}")
 	public Student getStudent(@PathVariable("id") int id) {
-		return studentRepo.getOne(id);
+		return studentRepo.findOne(id);
 	}
 	
-	@RequestMapping("/instructor/{id}")
+	@GetMapping("/instructor/{id}")
 	public Instructor getInstructor(@PathVariable("id") int id) {
 		return instructorRepo.getOne(id);
 	}
 	
-	@RequestMapping("/admin/{id}")
+	@GetMapping("/admin/{id}")
 	public Administrator getAdmin(@PathVariable("id") int id) {
 		return adminRepo.getOne(id);
 	}
@@ -103,19 +108,29 @@ public class UserController {
 	 * GET ALL
 	 */
 	
-	@RequestMapping("/allStudents")
+	@GetMapping("/allStudents")
 	public List<Student> getAllStudents(){
-		return studentRepo.findAll();
+		System.out.println("GETTING ALL STUDENTS");
+		return (List<Student>) studentRepo.findAll();
 	}
 	
-	@RequestMapping("/allInstructors")
+	@GetMapping("/allInstructors")
 	public List<Instructor> getAllInstructors(){
 		return instructorRepo.findAll();
 	}
 	
-	@RequestMapping("/allAdmins")
+	@GetMapping("/allAdmins")
 	public List<Administrator> getAllAdmins(){
 		return adminRepo.findAll();
 	}
 	
+	/*
+	 * LOGIN
+	 */
+	
+	@PostMapping("/findEmail")
+	public Student loginStudent(@RequestBody JSONObject login) {
+		String s = (String) login.get("email");
+		return studentRepo.findByEmail(s);
+	}
 }
