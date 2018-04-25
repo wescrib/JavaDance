@@ -55,6 +55,16 @@ public abstract class User {
 	@DateTimeFormat(pattern="MM/dd/yyyy HH:mm:ss")
 	protected Date updatedAt;
 	
+	protected String errors;
+	
+	public String getErrors() {
+		return errors;
+	}
+
+	public void setErrors(String error) {
+		this.errors = error;
+	}
+
 	@PrePersist
 	public void onCreate() {
 		this.createdAt = new Date();

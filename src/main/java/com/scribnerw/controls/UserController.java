@@ -1,10 +1,9 @@
 package com.scribnerw.controls;
 
 import java.util.List;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.*;
 
+import org.json.simple.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scribnerw.models.User.*;
@@ -39,6 +37,7 @@ public class UserController {
 	
 	@PostMapping("/new-student")
 	public Student createStudent(@RequestBody Student student) {
+		student.setPassword(BCrypt.hashpw(student.getPassword(),BCrypt.gensalt()));
 		return studentRepo.save(student);
 	}
 	@PostMapping("/new-instructor")
@@ -128,9 +127,25 @@ public class UserController {
 	 * LOGIN
 	 */
 	
-	@PostMapping("/findEmail")
+	@PostMapping("/login")
 	public Student loginStudent(@RequestBody JSONObject login) {
-		String s = (String) login.get("email");
-		return studentRepo.findByEmail(s);
+		String email = (String) login.get("email");
+		String pw = (String) login.get("password");
+		Student blankStudent = new Student();
+		if(email.equals("") || pw.equals("")) {
+			blankStudent.setErrors("Email/Password fields cannot be blank");
+			return blankStudent;
+		}
+		Student student = studentRepo.findByEmail(email);
+		if(student == null) {
+			blankStudent.setErrors("Email not on record");
+			return blankStudent;
+			} else {
+				if(BCrypt.checkpw(pw, student.getPassword())) {
+					return student;
+				}
+			blankStudent.setErrors("Passwords do not match");
+			return blankStudent;
+		}
 	}
 }
